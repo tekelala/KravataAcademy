@@ -33,6 +33,10 @@ if "prompts" not in st.session_state:
 if "class_generated" not in st.session_state:
     st.session_state.class_generated = False
 
+if "rerun" not in st.session_state:
+    st.session_state.rerun = False
+
+
 with st.container():
     st.title("Chat with the Kravata Teacher")
     st.markdown("Welcome to the class designer!")
@@ -68,6 +72,7 @@ with st.container():
                     "content": user_message
                 })
 
+
 with st.container():
     if st.session_state.prompts and not st.session_state.rerun:
         with st.spinner('Waiting for the Kravata Teacher...'):
@@ -101,8 +106,8 @@ with st.container():
             except Exception as e:
                 st.error(f"Unexpected error: {e}")
 
-# Add this new block to handle rerunning
 if st.session_state.rerun:
+    st.session_state.rerun = False  # Reset the rerun state
     st.experimental_rerun()
 
 
