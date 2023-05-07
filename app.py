@@ -26,6 +26,13 @@ def send_message(prompts):
 
     return response.json()
 
+# Initialize session state variables
+if "prompts" not in st.session_state:
+    st.session_state.prompts = []
+
+if "class_generated" not in st.session_state:
+    st.session_state.class_generated = False
+
 with st.container():
     st.title("Chat with the Kravata Teacher")
     st.markdown("Welcome to class designer!")
@@ -39,47 +46,61 @@ with st.container():
             st.write(f"Kravata Teacher: {prompt['content']}")
 
 with st.container():
-    with st.form(key='message_form'):
-        user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  # add this line
-        submit_button = st.form_submit_button(label='Send')
-        
-        if submit_button:
-            if user_topic and not any(prompt['content'].startswith("You are a seasoned teacher") for prompt in st.session_state.prompts):
+    if not st.session_state.class_generated:
+        with st.form(key='message_form'):
+            user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  
+            submit_button = st.form_submit_button(label='Send')
+            
+            if submit_button and user_topic:
                 company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."
                 st.session_state.prompts.append({
                     "role": "Human",
                     "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points. Keep the class short and impactful."""
                 })
+    else:
+        with st.form(key='message_form'):
+            user_message = st.text_input("Which part of the class do you want to develop?", key=f"user_input_{len(st.session_state.prompts)}")
+            submit_button = st.form_submit_button(label='Send')
 
-            if st.session_state.prompts:
-                with st.spinner('Waiting for Claude...'):
-                    try:
-                        result = send_message(st.session_state.prompts)
+            if submit_button and user_message:
+                st.session_state.prompts.append({
+                    "role": "Human",
+                    "content": user_message
+                })
 
-                        # Append Claude's response to the prompts
-                        st.session_state.prompts.append({
-                            "role": "Assistant",
-                            "content": result['completion']
-                        })
+    if st.session_state.prompts:
+        with st.spinner('Waiting for Claude...'):
+            try:
+                result = send_message(st.session_state.prompts)
 
-                        # Rerun the script to update the chat
-                        st.experimental_rerun()
+                # Append Claude's response to the prompts
+                st.session_state.prompts.append({
+                    "role": "Assistant",
+                    "content": result['completion']
+                })
 
-                        # Display a success message
-                        st.success("Message sent successfully!")
+                # Mark the class as generated
+                st.session_state.class_generated = True
 
-                    except requests.exceptions.HTTPError as errh:
-                        st.error(f"HTTP Error: {errh}")
-                    except requests.exceptions.ConnectionError as errc:
-                        st.error(f"Error Connecting: {errc}")
-                    except requests.exceptions.Timeout as errt:
-                        st.error(f"Timeout Error: {errt}")
-                    except requests.exceptions.RequestException as err:
-                        st.error(f"Something went wrong: {err}")
-                    except Exception as e:
-                        st.error(f"Unexpected error: {e}")
+                # Rerun the script to update the chat
+                st.experimental_rerun()
+
+                # Display a success message
+                st.success("Message sent successfully!")
+
+            except requests.exceptions.HTTPError as errh:
+                st.error(f"HTTP Error: {errh}")
+            except requests.exceptions.ConnectionError as errc:
+                st.error(f"Error Connecting: {errc}")
+            except requests.exceptions.Timeout as errt:
+                st.error(f"Timeout Error: {errt}")
+            except requests.exceptions.RequestException as err:
+                st.error(f"Something went wrong: {err}")
+            except Exception as e:
+                st.error(f"Unexpected error: {e}")
 
 with st.container():
     if st.button('Restart'):
         st.session_state.prompts = []
+        st.session_state.class_generated = False
         st.experimental_rerun()
