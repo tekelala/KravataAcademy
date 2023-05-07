@@ -44,7 +44,7 @@ with st.container():
         submit_button = st.form_submit_button(label='Send')
         
         if submit_button:
-            if user_topic:
+            if user_topic and not any(prompt['content'].startswith("You are a seasoned teacher") for prompt in st.session_state.prompts):
                 company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."
                 st.session_state.prompts.append({
                     "role": "Human",
