@@ -74,37 +74,35 @@ with st.container():
 
 
 with st.container():
-    if st.session_state.prompts and not st.session_state.rerun:
-        with st.spinner('Waiting for the Kravata Teacher...'):
-            try:
-                result = send_message(st.session_state.prompts)
+    if st.session_state.prompts:
+        if submit_button and (user_topic or user_message):
+            with st.spinner('Waiting for the Kravata Teacher...'):
+                try:
+                    result = send_message(st.session_state.prompts)
 
-                # Append Claude's response to the prompts
-                st.session_state.prompts.append({
-                    "role": "Assistant",
-                    "content": result['completion']
-                })
+                    # Append Claude's response to the prompts
+                    st.session_state.prompts.append({
+                        "role": "Assistant",
+                        "content": result['completion']
+                    })
 
-                # Display a success message
-                st.success("Message sent successfully!")
+                    # Display a success message
+                    st.success("Message sent successfully!")
 
-                # Mark the class as generated only if there was a user message
-                if submit_button and (user_topic or user_message):
-                    st.session_state.class_generated = True
+                    # Mark the class as generated only if there was a user message
+                    if submit_button and (user_topic or user_message):
+                        st.session_state.class_generated = True
 
-                # Set rerun to True
-                st.session_state.rerun = True
-
-            except requests.exceptions.HTTPError as errh:
-                st.error(f"HTTP Error: {errh}")
-            except requests.exceptions.ConnectionError as errc:
-                st.error(f"Error Connecting: {errc}")
-            except requests.exceptions.Timeout as errt:
-                st.error(f"Timeout Error: {errt}")
-            except requests.exceptions.RequestException as err:
-                st.error(f"Something went wrong: {err}")
-            except Exception as e:
-                st.error(f"Unexpected error: {e}")
+                except requests.exceptions.HTTPError as errh:
+                    st.error(f"HTTP Error: {errh}")
+                except requests.exceptions.ConnectionError as errc:
+                    st.error(f"Error Connecting: {errc}")
+                except requests.exceptions.Timeout as errt:
+                    st.error(f"Timeout Error: {errt}")
+                except requests.exceptions.RequestException as err:
+                    st.error(f"Something went wrong: {err}")
+                except Exception as e:
+                    st.error(f"Unexpected error: {e}")
 
 if st.session_state.rerun:
     st.session_state.rerun = False  # Reset the rerun state
