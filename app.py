@@ -68,6 +68,7 @@ with st.container():
                     "content": user_message
                 })
 
+with st.container():
     if st.session_state.prompts:
         with st.spinner('Waiting for Kravata Teacher...'):
             try:
@@ -78,9 +79,6 @@ with st.container():
                     "role": "Assistant",
                     "content": result['completion']
                 })
-
-                # Rerun the script to update the chat
-                st.experimental_rerun()
 
                 # Display a success message
                 st.success("Message sent successfully!")
