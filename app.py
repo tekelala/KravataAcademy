@@ -1,30 +1,91 @@
 import streamlit as st
-from streamlit import caching
+import requests
+import json
 
-@st.cache(allow_output_mutation=True)
-def get_conversation():
-    return []
+def send_message(prompts):
+    api_url = "https://api.anthropic.com/v1/complete"
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-Key": st.secrets["API_KEY"]  # Use the API key from Streamlit's secrets
+    }
 
-def generate_content(topic, company_purpose):
-    prompt = f"""
-    You are a seasoned teacher with the goal to impact your students, allowing them to understand and engage with the topic of {topic}. You are inspired by the purpose of the company, which is "{company_purpose}". Please provide a proposed structure for the class.
-    """
-    return prompt
+    # Prepare the prompts for Claude
+    conversation = "\n\n".join([f'{item["role"]}: {item["content"]}' for item in prompts]) + "\n\nAssistant:"
 
-st.title("Content Generator for Kravata Academy")
+    # Define the body of the request
+    body = {
+        "prompt": conversation,
+        "model": "claude-v1.3",
+        "max_tokens_to_sample": 1000,
+        "stop_sequences": ["\n\nHuman:"]
+    }
 
-# Get the topic from the user
-topic = st.text_input("Enter the topic for the class:")
-company_purpose = "Educate audiences and position Kravata as the 'web3 for all' company."
+    # Make a POST request to the Claude API
+    response = requests.post(api_url, headers=headers, data=json.dumps(body))
+    response.raise_for_status()
 
-if st.button("Generate Content"):
-    # Get the conversation history
-    conversation = get_conversation()
+    return response.json()
 
-    # Generate new content and add it to the conversation history
-    content = generate_content(topic, company_purpose)
-    conversation.append(content)
-    
-    # Display the conversation history
-    for i, message in enumerate(conversation):
-        st.write(f"Message {i + 1}: {message}")
+st.title("Chat with Claude")
+
+if "prompts" not in st.session_state:
+    st.session_state.prompts = []
+
+for prompt in st.session_state.prompts:
+    if prompt['role'] == 'Human':
+        st.write(f"You: {prompt['content']}")
+    else:  # prompt['role'] == 'Assistant'
+        st.write(f"Claude: {prompt['content']}")
+
+company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."
+user_topic = st.text_input("Enter the topic for the class:", key="user_topic")
+
+if user_topic:
+    st.session_state.prompts.append({
+        "role": "Human",
+        "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points."""
+    })
+
+with st.container():
+    with st.form(key='message_form'):
+        user_message = st.text_input("You: ", key=f"user_input_{len(st.session_state.prompts)}")
+        submit_button = st.form_submit_button(label='Send')
+
+        if submit_button and user_message:
+            st.session_state.prompts.append({
+                "role": "Human",
+                "content": user_message
+            })
+
+            if st.session_state.prompts:
+                with st.spinner('Waiting for Claude...'):
+                    try:
+                        result = send_message(st.session_state.prompts)
+
+                        # Append Claude's response to the prompts
+                        st.session_state.prompts.append({
+                            "role": "Assistant",
+                            "content": result['completion']
+                        })
+
+                        # Rerun the script to update the chat
+                        st.experimental_rerun()
+
+                        # Display a success message
+                        st.success("Message sent successfully!")
+
+                    except requests.exceptions.HTTPError as errh:
+                        st.error(f"HTTP Error: {errh}")
+                    except requests.exceptions.ConnectionError as errc:
+                        st.error(f"Error Connecting: {errc}")
+                    except requests.exceptions.Timeout as errt:
+                        st.error(f"Timeout Error: {errt}")
+                    except requests.exceptions.RequestException as err:
+                        st.error(f"Something went wrong: {err}")
+                    except Exception as e:
+
+# Container for Restart button
+with st.container():
+    if st.button('Restart'):
+        st.session_state.prompts = []
+        st.experimental_rerun()
