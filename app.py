@@ -42,14 +42,6 @@ with st.container():
     st.markdown("Welcome to the class designer!")
 
 with st.container():
-    # Display the entire conversation
-    for i, prompt in enumerate(st.session_state.prompts):
-        if prompt['role'] == 'Human' and i != 0:
-            st.write(f"You: {prompt['content']}")
-        elif prompt['role'] == 'Assistant':
-            st.write(f"Kravata Teacher: {prompt['content']}")
-
-with st.container():
     if not st.session_state.class_generated:
         with st.form(key='message_form'):
             user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  
@@ -107,6 +99,14 @@ with st.container():
 if st.session_state.rerun:
     st.session_state.rerun = False  # Reset the rerun state
     st.experimental_rerun()
+
+with st.container():
+    # Display the entire conversation
+    for i, prompt in enumerate(st.session_state.prompts):
+        if prompt['role'] == 'Human' and i != 0:
+            st.write(f"You: {prompt['content']}")
+        elif prompt['role'] == 'Assistant':
+            st.write(f"Kravata Teacher: {prompt['content']}")
 
 
 with st.container():
