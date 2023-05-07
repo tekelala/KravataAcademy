@@ -80,11 +80,11 @@ with st.container():
                     "content": result['completion']
                 })
 
-                # Rerun the script to update the chat
-                #st.experimental_rerun()
-
                 # Display a success message
                 st.success("Message sent successfully!")
+
+                # Rerun the script to update the chat
+                st.experimental_rerun()
 
                 # Mark the class as generated only if there was a user message
                 if submit_button and (user_topic or user_message):
