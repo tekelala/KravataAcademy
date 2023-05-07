@@ -30,15 +30,15 @@ with st.container():
     st.title("Chat with Claude")
     st.markdown("Welcome to our chat application!")
 
-company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."  
-
 with st.container():
-    for prompt in st.session_state.prompts:  # Add this block
-        if prompt['role'] == 'Human':
+    # Display the entire conversation
+    for i, prompt in enumerate(st.session_state.prompts):
+        if prompt['role'] == 'Human' and i != 0:
             st.write(f"You: {prompt['content']}")
-        else:  # prompt['role'] == 'Assistant'
+        elif prompt['role'] == 'Assistant':
             st.write(f"Claude: {prompt['content']}")
 
+with st.container():
     with st.form(key='message_form'):
         user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  # add this line
         submit_button = st.form_submit_button(label='Send')
@@ -48,12 +48,6 @@ with st.container():
                 st.session_state.prompts.append({
                     "role": "Human",
                     "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points."""
-                })
-
-            if user_topic:
-                st.session_state.prompts.append({
-                    "role": "Human",
-                    "content": user_topic
                 })
 
             if st.session_state.prompts:
