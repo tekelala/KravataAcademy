@@ -40,22 +40,23 @@ for prompt in st.session_state.prompts:
 company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."
 user_topic = st.text_input("Enter the topic for the class:", key="user_topic")
 
-if user_topic:
-    st.session_state.prompts.append({
-        "role": "Human",
-        "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points."""
-    })
-
 with st.container():
     with st.form(key='message_form'):
         user_message = st.text_input("You: ", key=f"user_input_{len(st.session_state.prompts)}")
         submit_button = st.form_submit_button(label='Send')
 
-        if submit_button and user_message:
-            st.session_state.prompts.append({
-                "role": "Human",
-                "content": user_message
-            })
+        if submit_button:
+            if user_topic:
+                st.session_state.prompts.append({
+                    "role": "Human",
+                    "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points."""
+                })
+
+            if user_message:
+                st.session_state.prompts.append({
+                    "role": "Human",
+                    "content": user_message
+                })
 
             if st.session_state.prompts:
                 with st.spinner('Waiting for Claude...'):
@@ -84,6 +85,7 @@ with st.container():
                         st.error(f"Something went wrong: {err}")
                     except Exception as e:
                         st.error(f"Unexpected error: {e}")
+
 
 # Container for Restart button
 with st.container():
