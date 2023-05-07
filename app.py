@@ -81,7 +81,7 @@ with st.container():
                 })
 
                 # Rerun the script to update the chat
-                st.experimental_rerun()
+                #st.experimental_rerun()
 
                 # Display a success message
                 st.success("Message sent successfully!")
