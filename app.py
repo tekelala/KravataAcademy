@@ -47,7 +47,7 @@ with st.container():
     submit_button = False  # Add this line
     if not st.session_state.class_generated:
         with st.form(key='class_topic_Form'):
-            user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  
+            user_topic = st.text_input("Enter the topic for the class:", key=f"user_topic_{len(st.session_state.prompts)}")  
             submit_button = st.form_submit_button(label='Send')
             
             if submit_button and user_topic:
@@ -115,7 +115,7 @@ with st.container():
 with st.container():
     if st.session_state.class_generated:
         with st.form(key='message_form'):
-            user_message = st.text_input("Which part of the class do you want to develop?", key=f"user_input_{len(st.session_state.prompts)}")
+            user_message = st.text_input("Which part of the class do you want to develop?", key=f"user_message_{len(st.session_state.prompts)}")
             submit_button = st.form_submit_button(label='Send')
 
             if submit_button and user_message:
