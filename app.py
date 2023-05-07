@@ -69,7 +69,7 @@ with st.container():
                 })
 
 with st.container():
-    if st.session_state.prompts:
+    if st.session_state.prompts and not st.session_state.rerun:
         with st.spinner('Waiting for the Kravata Teacher...'):
             try:
                 result = send_message(st.session_state.prompts)
@@ -83,12 +83,12 @@ with st.container():
                 # Display a success message
                 st.success("Message sent successfully!")
 
-                # Rerun the script to update the chat
-                st.experimental_rerun()
-
                 # Mark the class as generated only if there was a user message
                 if submit_button and (user_topic or user_message):
                     st.session_state.class_generated = True
+
+                # Set rerun to True
+                st.session_state.rerun = True
 
             except requests.exceptions.HTTPError as errh:
                 st.error(f"HTTP Error: {errh}")
@@ -100,6 +100,10 @@ with st.container():
                 st.error(f"Something went wrong: {err}")
             except Exception as e:
                 st.error(f"Unexpected error: {e}")
+
+# Add this new block to handle rerunning
+if st.session_state.rerun:
+    st.experimental_rerun()
 
 
 with st.container():
