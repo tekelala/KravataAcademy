@@ -44,10 +44,10 @@ with st.container():
                     "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points."""
                 })
 
-            if user_message:
+            if user_topic:
                 st.session_state.prompts.append({
                     "role": "Human",
-                    "content": user_message
+                    "content": user_topic
                 })
 
             if st.session_state.prompts:
