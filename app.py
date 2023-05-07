@@ -30,11 +30,14 @@ with st.container():
     st.title("Chat with Claude")
     st.markdown("Welcome to our chat application!")
 
+company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."  
+
 with st.container():
     with st.form(key='message_form'):
+        user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  # add this line
         user_message = st.text_input("You: ", key=f"user_input_{len(st.session_state.prompts)}")
         submit_button = st.form_submit_button(label='Send')
-
+        
         if submit_button:
             if user_topic:
                 st.session_state.prompts.append({
