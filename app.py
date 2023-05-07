@@ -27,8 +27,8 @@ def send_message(prompts):
     return response.json()
 
 with st.container():
-    st.title("Chat with Claude")
-    st.markdown("Welcome to our chat application!")
+    st.title("Chat with the Kravata Teacher")
+    st.markdown("Welcome to class designer!")
 
 with st.container():
     # Display the entire conversation
@@ -36,7 +36,7 @@ with st.container():
         if prompt['role'] == 'Human' and i != 0:
             st.write(f"You: {prompt['content']}")
         elif prompt['role'] == 'Assistant':
-            st.write(f"Claude: {prompt['content']}")
+            st.write(f"Kravata Teacher: {prompt['content']}")
 
 with st.container():
     with st.form(key='message_form'):
