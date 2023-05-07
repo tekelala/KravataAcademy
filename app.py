@@ -33,6 +33,12 @@ with st.container():
 company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."  
 
 with st.container():
+    for prompt in st.session_state.prompts:  # Add this block
+        if prompt['role'] == 'Human':
+            st.write(f"You: {prompt['content']}")
+        else:  # prompt['role'] == 'Assistant'
+            st.write(f"Claude: {prompt['content']}")
+
     with st.form(key='message_form'):
         user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  # add this line
         submit_button = st.form_submit_button(label='Send')
@@ -69,7 +75,7 @@ with st.container():
 
                     except requests.exceptions.HTTPError as errh:
                         st.error(f"HTTP Error: {errh}")
-                    except requests.exceptions.ConnectionError as errc:
+                    except requests.exceptionssure.ConnectionError as errc:
                         st.error(f"Error Connecting: {errc}")
                     except requests.exceptions.Timeout as errt:
                         st.error(f"Timeout Error: {errt}")
