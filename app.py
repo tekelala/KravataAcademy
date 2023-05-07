@@ -33,6 +33,9 @@ if "prompts" not in st.session_state:
 if "class_generated" not in st.session_state:
     st.session_state.class_generated = False
 
+if "part_developed" not in st.session_state:  # Add this line
+    st.session_state.part_developed = False  # Add this line
+
 # Container 1: Title and banner image
 with st.container():
     st.title("Chat with the Kravata Teacher")
@@ -61,8 +64,9 @@ with st.container():
             if submit_button and user_message:
                 st.session_state.prompts.append({
                     "role": "Human",
-                    "content": user_message
+                    "content": f"Please generate content for the '{user_message}' part of the class."  # Add this line
                 })
+                st.session_state.part_developed = True  # Add this line
 # Container 3: Show the answer by Claude
 with st.container():
     if st.session_state.prompts and user_topic and submit_button:
@@ -77,7 +81,7 @@ with st.container():
                 })
 
                 # Display a success message
-                st.success("Message sent successfully!")
+                # st.success("Message sent successfully!")
 
                 # Mark the class as generated only if there was a user message
                 if submit_button and user_topic:
@@ -121,3 +125,35 @@ with st.container():
                 })
                 # Re-run the script after appending new user_message to prompts
                 st.experimental_rerun()
+
+# Container 6: Show the answer by Claude for part development
+with st.container():
+    if st.session_state.prompts and st.session_state.part_developed:  # Change this line
+        with st.spinner('Waiting for the Kravata Teacher...'):
+            try:
+                result = send_message(st.session_state.prompts)
+
+                # Append Claude's response to the prompts
+                st.session_state.prompts.append({
+                    "role": "Assistant",
+                    "content": result['completion']
+                })
+
+                # Display the entire conversation
+                for i, prompt in enumerate(st.session_state.prompts):
+                    if prompt['role'] == 'Human' and i != 0:
+                        st.write(f"You: {prompt['content']}")
+                    elif prompt['role'] == 'Assistant':
+                        st.write(f"Kravata Teacher: {prompt['content']}")
+
+            except requests.exceptions.HTTPError as errh:
+                st.error(f"HTTP Error: {errh}")
+            except requests.exceptions.ConnectionError as errc:
+                st.error(f"Error Connecting: {errc}")
+            except requests.exceptions.Timeout as errt:
+                st.error(f"Timeout Error: {errt}")
+            except requests.exceptions.RequestException as err:
+                st.error(f"Something went wrong: {err}")
+            except Exception as e:
+                st.error(f"Unexpected error: {e}")
+
