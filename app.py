@@ -83,9 +83,10 @@ with st.container():
                     except requests.exceptions.RequestException as err:
                         st.error(f"Something went wrong: {err}")
                     except Exception as e:
+                        st.error(f"Unexpected error: {e}")
 
 # Container for Restart button
 with st.container():
-        if st.button('Restart'):
-            st.session_state.prompts = []
-            st.experimental_rerun()
+    if st.button('Restart'):
+        st.session_state.prompts = []
+        st.experimental_rerun()
