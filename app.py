@@ -40,6 +40,8 @@ with st.container():
 
 # Container 2: Enter the topic for the class
 with st.container():
+    user_topic = ""  # Add this line
+    submit_button = False  # Add this line
     if not st.session_state.class_generated:
         with st.form(key='message_form'):
             user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  
@@ -50,6 +52,16 @@ with st.container():
                 st.session_state.prompts.append({
                     "role": "Human",
                     "content": f"""You are a seasoned teacher with the goal to impact your students allowing them to understand and engage. As an AI developed by Kravata, a company with the purpose of '{company_purpose}', I need you to generate a structure for a class on the topic of '{user_topic}'. The class should be aimed at beginners in the field of Web3. Please remember to use simple, easy-to-understand language and provide a clear outline of the class with key learning points. Keep the class short and impactful."""
+                })
+    else:
+        with st.form(key='message_form'):
+            user_message = st.text_input("Which part of the class do you want to develop?", key=f"user_input_{len(st.session_state.prompts)}")
+            submit_button = st.form_submit_button(label='Send')
+
+            if submit_button and user_message:
+                st.session_state.prompts.append({
+                    "role": "Human",
+                    "content": user_message
                 })
 # Container 3: Show the answer by Claude
 with st.container():
