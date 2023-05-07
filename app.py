@@ -75,7 +75,7 @@ with st.container():
 
                     except requests.exceptions.HTTPError as errh:
                         st.error(f"HTTP Error: {errh}")
-                    except requests.exceptionssure.ConnectionError as errc:
+                    except requests.exceptions.ConnectionError as errc:
                         st.error(f"Error Connecting: {errc}")
                     except requests.exceptions.Timeout as errt:
                         st.error(f"Timeout Error: {errt}")
