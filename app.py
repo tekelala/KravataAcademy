@@ -35,7 +35,6 @@ company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespect
 with st.container():
     with st.form(key='message_form'):
         user_topic = st.text_input("Enter the topic for the class:", key="user_topic")  # add this line
-        user_message = st.text_input("You: ", key=f"user_input_{len(st.session_state.prompts)}")
         submit_button = st.form_submit_button(label='Send')
         
         if submit_button:
