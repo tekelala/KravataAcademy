@@ -69,7 +69,7 @@ with st.container():
                 })
 
     if st.session_state.prompts:
-        with st.spinner('Waiting for Claude...'):
+        with st.spinner('Waiting for Kravata Teacher...'):
             try:
                 result = send_message(st.session_state.prompts)
 
@@ -79,14 +79,15 @@ with st.container():
                     "content": result['completion']
                 })
 
-                # Mark the class as generated
-                st.session_state.class_generated = True
-
                 # Rerun the script to update the chat
                 st.experimental_rerun()
 
                 # Display a success message
                 st.success("Message sent successfully!")
+
+                # Mark the class as generated only if there was a user message
+                if submit_button and (user_topic or user_message):
+                    st.session_state.class_generated = True
 
             except requests.exceptions.HTTPError as errh:
                 st.error(f"HTTP Error: {errh}")
@@ -98,6 +99,7 @@ with st.container():
                 st.error(f"Something went wrong: {err}")
             except Exception as e:
                 st.error(f"Unexpected error: {e}")
+
 
 with st.container():
     if st.button('Restart'):
