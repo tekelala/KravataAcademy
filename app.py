@@ -33,8 +33,12 @@ if "prompts" not in st.session_state:
 if "class_generated" not in st.session_state:
     st.session_state.class_generated = False
 
-if "part_developed" not in st.session_state:  # Add this line
-    st.session_state.part_developed = False  # Add this line
+if "part_developed" not in st.session_state:
+    st.session_state.part_developed = False
+
+if "part_developed_submitted" not in st.session_state:
+    st.session_state.part_developed_submitted = False
+
 
 # Container 1: Title and banner image
 with st.container():
@@ -114,7 +118,7 @@ with st.container():
 # Container 5: Which part of the class do you want to develop
 with st.container():
     if st.session_state.class_generated:
-        with st.form(key='message_form'):
+        with st.form(key='part_development_form'):  # Change 'message_form' to 'part_development_form'
             user_message = st.text_input("Which part of the class do you want to develop?", key=f"user_message_{len(st.session_state.prompts)}")
             submit_button = st.form_submit_button(label='Send')
 
@@ -123,12 +127,14 @@ with st.container():
                     "role": "Human",
                     "content": user_message
                 })
-                # Re-run the script after appending new user_message to prompts
-                st.experimental_rerun()
 
-# Container 6: Show the answer by Claude for part development
+                # Set part_developed_submitted to True to indicate that this form has been submitted
+                st.session_state.part_developed_submitted = True  # Add this line
+
+## Container 6: Show the answer by Claude for part development
 with st.container():
-    if st.session_state.prompts and st.session_state.part_developed:  # Change this line
+    # Change the condition to check if part_developed_submitted is True
+    if st.session_state.prompts and st.session_state.part_developed_submitted:  
         with st.spinner('Waiting for the Kravata Teacher...'):
             try:
                 result = send_message(st.session_state.prompts)
@@ -146,6 +152,9 @@ with st.container():
                     elif prompt['role'] == 'Assistant':
                         st.write(f"Kravata Teacher: {prompt['content']}")
 
+                # Set part_developed_submitted back to False after displaying the response
+                st.session_state.part_developed_submitted = False  # Add this line
+
             except requests.exceptions.HTTPError as errh:
                 st.error(f"HTTP Error: {errh}")
             except requests.exceptions.ConnectionError as errc:
@@ -156,4 +165,5 @@ with st.container():
                 st.error(f"Something went wrong: {err}")
             except Exception as e:
                 st.error(f"Unexpected error: {e}")
+
 
