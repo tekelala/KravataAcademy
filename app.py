@@ -26,19 +26,9 @@ def send_message(prompts):
 
     return response.json()
 
-st.title("Chat with Claude")
-
-if "prompts" not in st.session_state:
-    st.session_state.prompts = []
-
-for prompt in st.session_state.prompts:
-    if prompt['role'] == 'Human':
-        st.write(f"You: {prompt['content']}")
-    else:  # prompt['role'] == 'Assistant'
-        st.write(f"Claude: {prompt['content']}")
-
-company_purpose = "Our purpose is to make Web3 accessible to everyone, irrespective of their technical background."
-user_topic = st.text_input("Enter the topic for the class:", key="user_topic")
+with st.container():
+    st.title("Chat with Claude")
+    st.markdown("Welcome to our chat application!")
 
 with st.container():
     with st.form(key='message_form'):
@@ -86,8 +76,6 @@ with st.container():
                     except Exception as e:
                         st.error(f"Unexpected error: {e}")
 
-
-# Container for Restart button
 with st.container():
     if st.button('Restart'):
         st.session_state.prompts = []
